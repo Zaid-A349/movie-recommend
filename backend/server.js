@@ -1,152 +1,106 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const axios = require("axios");
+const fs = require("fs");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect("mongodb+srv://zaidansari0349:zaidansari0349@recommendation-system.a0nxehx.mongodb.net/movieApp?retryWrites=true&w=majority")
+mongoose.connect(
+  "mongodb+srv://zaidansari0349:zaidansari0349@recommendation-system.a0nxehx.mongodb.net/movieApp?retryWrites=true&w=majority"
+)
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err.message));
-
-const headers = {
-  "X-RapidAPI-Key":
-    "cde2400d59msh4a6fc476076e802p123335jsn4f64acf2110d",
-
-  "X-RapidAPI-Host":
-    "imdb8.p.rapidapi.com",
-};
 
 app.get("/", (req, res) => {
   res.send("API is running");
 });
 
-// helper function
-const fetchMovieDetails = async (ids) => {
-
-  const movies = await Promise.all(
-
-    ids.map(async (id) => {
-
-      const movieId = id.split("/")[2];
-
-      const response = await axios.get(
-        "https://imdb8.p.rapidapi.com/title/get-overview-details",
-        {
-          params: {
-            tconst: movieId,
-          },
-
-          headers,
-        }
-      );
-
-      return response.data;
-    })
-
-  );
-
-  return movies;
-};
+// LOAD DATASET
+const movies = JSON.parse(
+  fs.readFileSync("./data/movies.json", "utf-8")
+);
 
 // POPULAR
-app.get("/popular", async (req, res) => {
-  try {
+app.get("/popular", (req, res) => {
 
-    const response = await axios.get(
-      "https://imdb8.p.rapidapi.com/title/get-most-popular-movies",
-      {
-        headers,
-      }
-    );
-
-    const ids = response.data.slice(0, 5);
-
-    const movies = await Promise.all(
-
-      ids.map(async (id) => {
-
-        try {
-
-          const movieId = id.split("/")[2];
-
-          const movieResponse = await axios.get(
-            "https://imdb8.p.rapidapi.com/title/get-overview-details",
-            {
-              params: {
-                tconst: movieId,
-              },
-
-              headers,
-            }
-          );
-
-          return movieResponse.data;
-
-        } catch {
-
-          return null;
-        }
-      })
-
-    );
-
-    // remove failed/null movies
-    const filteredMovies = movies.filter(Boolean);
-
-    res.json(filteredMovies);
-
-  } catch (err) {
-
-    console.log(err.message);
-
-    // ALWAYS send array
-    res.json([]);
-  }
+  res.json(
+    movies.slice(0, 20)
+  );
 });
 
 // TOP RATED
-app.get("/top-rated", async (req, res) => {
-  try {
+app.get("/top-rated", (req, res) => {
 
-    const response = await axios.get(
-      "https://www.omdbapi.com/",
-      {
-        params: {
-          apikey: "e74ea04b",
-          s: "interstellar",
-        },
-      }
-    );
-
-    res.json(response.data.Search || []);
-
-  } catch (err) {
-
-    console.log(err.message);
-
-    res.json([]);
-  }
+  res.json(
+    movies.slice(20, 40)
+  );
 });
 
 // NEW RELEASES
-app.get("/new-releases", async (req, res) => {
+app.get("/new-releases", (req, res) => {
+
+  const filtered = movies.filter(
+    (movie) => movie.year >= 2020
+  );
+
+  res.json(
+    filtered.slice(0, 20)
+  );
+});
+
+// RECOMMEND
+app.post("/recommend", (req, res) => {
+
   try {
 
-    const response = await axios.get(
-      "https://www.omdbapi.com/",
-      {
-        params: {
-          apikey: "e74ea04b",
-          s: "2024",
-        },
-      }
-    );
+    const {
+      genres,
+      type,
+      year,
+    } = req.body;
 
-    res.json(response.data.Search || []);
+    const filteredMovies = movies.filter((movie) => {
+
+      // genre matching
+      const genreMatch =
+        genres.length === 0 ||
+
+        genres.some((selectedGenre) =>
+
+          movie.genre.some((movieGenre) =>
+
+            movieGenre
+              .toLowerCase()
+              .includes(
+                selectedGenre.toLowerCase()
+              )
+          )
+        );
+
+      // type matching
+      const typeMatch =
+        !type ||
+        movie.type.toLowerCase() ===
+        type.toLowerCase();
+
+      // year matching
+      const yearMatch =
+        !year ||
+        movie.year >= Number(year);
+
+      return (
+        genreMatch &&
+        typeMatch &&
+        yearMatch
+      );
+    });
+
+    res.json(
+      filteredMovies.slice(0, 20)
+    );
 
   } catch (err) {
 

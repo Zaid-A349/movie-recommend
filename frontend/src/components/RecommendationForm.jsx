@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 const genresList = [
   "Action",
   "Comedy",
@@ -13,13 +15,13 @@ const genresList = [
 
 const RecommendationForm = () => {
 
+  const navigate = useNavigate();
+
   const [selectedGenres, setSelectedGenres] = useState([]);
 
   const [type, setType] = useState("");
 
   const [year, setYear] = useState("");
-
-  const [rating, setRating] = useState("");
 
   // genre selection
   const handleGenreChange = (genre) => {
@@ -39,14 +41,17 @@ const RecommendationForm = () => {
     }
   };
 
+  // submit
   const handleSubmit = (e) => {
+
     e.preventDefault();
 
-    console.log({
-      genres: selectedGenres,
-      type,
-      year,
-      rating,
+    navigate("/recommend/result", {
+      state: {
+        genres: selectedGenres,
+        type,
+        year,
+      },
     });
   };
 
@@ -62,7 +67,7 @@ const RecommendationForm = () => {
         className="space-y-6"
       >
 
-        {/* Genres */}
+        {/* GENRES */}
         <div>
 
           <label className="block mb-3 font-semibold">
@@ -76,7 +81,9 @@ const RecommendationForm = () => {
               <button
                 type="button"
                 key={genre}
-                onClick={() => handleGenreChange(genre)}
+                onClick={() =>
+                  handleGenreChange(genre)
+                }
                 className={`px-4 py-2 rounded border transition ${
                   selectedGenres.includes(genre)
                     ? "bg-yellow-400 text-black border-yellow-400"
@@ -92,7 +99,7 @@ const RecommendationForm = () => {
 
         </div>
 
-        {/* Type */}
+        {/* TYPE */}
         <div>
 
           <label className="block mb-2 font-semibold">
@@ -101,20 +108,28 @@ const RecommendationForm = () => {
 
           <select
             value={type}
-            onChange={(e) => setType(e.target.value)}
+            onChange={(e) =>
+              setType(e.target.value)
+            }
             className="w-full bg-black border border-gray-700 rounded px-4 py-3"
           >
-            <option value="">Select Type</option>
+            <option value="">
+              Select Type
+            </option>
 
-            <option value="movie">Movie</option>
+            <option value="movie">
+              Movie
+            </option>
 
-            <option value="series">Series</option>
+            <option value="tv show">
+              Series
+            </option>
 
           </select>
 
         </div>
 
-        {/* Year */}
+        {/* YEAR */}
         <div>
 
           <label className="block mb-2 font-semibold">
@@ -123,53 +138,41 @@ const RecommendationForm = () => {
 
           <select
             value={year}
-            onChange={(e) => setYear(e.target.value)}
+            onChange={(e) =>
+              setYear(e.target.value)
+            }
             className="w-full bg-black border border-gray-700 rounded px-4 py-3"
           >
-            <option value="">Select Year</option>
+            <option value="">
+              Select Year
+            </option>
 
-            <option value="2025">2025</option>
+            <option value="2024">
+              2024+
+            </option>
 
-            <option value="2024">2024</option>
+            <option value="2020">
+              2020+
+            </option>
 
-            <option value="2023">2023</option>
+            <option value="2015">
+              2015+
+            </option>
 
-            <option value="2020">2020+</option>
+            <option value="2010">
+              2010+
+            </option>
 
-            <option value="2015">2015+</option>
+            <option value="2000">
+              2000+
+            </option>
 
           </select>
 
         </div>
 
-        {/* Rating */}
-        <div>
-
-          <label className="block mb-2 font-semibold">
-            Minimum Rating
-          </label>
-
-          <select
-            value={rating}
-            onChange={(e) => setRating(e.target.value)}
-            className="w-full bg-black border border-gray-700 rounded px-4 py-3"
-          >
-            <option value="">Select Rating</option>
-
-            <option value="9">9+</option>
-
-            <option value="8">8+</option>
-
-            <option value="7">7+</option>
-
-            <option value="6">6+</option>
-
-          </select>
-
-        </div>
-
-        {/* Submit */}
-        <button className="w-full bg-yellow-400 text-black py-3 rounded font-semibold">
+        {/* BUTTON */}
+        <button className="w-full bg-yellow-400 text-black py-3 rounded font-semibold hover:bg-yellow-300 transition">
 
           Recommend
 

@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useNavigate } from "react-router-dom";
 
 const Hero = ({ movie }) => {
@@ -7,13 +8,16 @@ const Hero = ({ movie }) => {
 
   if (!movie) return null;
 
+  const randomPoster =
+    `https://picsum.photos/1600/900?random=${movie.title}`;
+
   return (
     <div className="relative h-[75vh] rounded overflow-hidden mb-14">
 
       {/* Background */}
       <img
-        src={movie?.title?.image?.url}
-        alt={movie?.title?.title}
+        src={movie.poster || randomPoster}
+        alt={movie.title}
         className="w-full h-full object-cover"
       />
 
@@ -31,26 +35,26 @@ const Hero = ({ movie }) => {
 
           <h1 className="text-5xl md:text-6xl font-bold mb-5 leading-tight">
 
-            {movie?.title?.title}
+            {movie.title}
 
           </h1>
 
           <div className="flex items-center gap-5 text-gray-300 mb-6">
 
             <p>
-              ⭐ {movie?.ratings?.rating || "N/A"}
+              {movie.type}
             </p>
 
             <p>
-              {movie?.title?.year}
+              {movie.year}
             </p>
 
           </div>
 
-          <p className="text-gray-300 mb-8 max-w-xl">
-            Discover trending movies and series,
-            explore recommendations based on your preferences,
-            and find your next favorite watch.
+          <p className="text-gray-300 mb-8 max-w-xl line-clamp-3">
+
+            {movie.description}
+
           </p>
 
           {/* Buttons */}

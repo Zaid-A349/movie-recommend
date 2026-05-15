@@ -7,8 +7,9 @@ import {
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import MoviesPage from "./components/MoviesPage";
 import Recommend from "./components/Recommend";
+import MoviesPage from "./components/MoviesPage";
+import RecommendationResult from "./components/RecommendationResult";
 
 function App() {
   return (
@@ -32,6 +33,16 @@ function App() {
         />
 
         <Route
+          path="/recommend"
+          element={<Recommend />}
+        />
+
+        <Route
+          path="/recommend/result"
+          element={<RecommendationResult />}
+        />
+
+        <Route
           path="/popular"
           element={<MoviesPage />}
         />
@@ -45,11 +56,6 @@ function App() {
           path="/new-releases"
           element={<MoviesPage />}
         />
-
-        <Route
-  path="/recommend"
-  element={<Recommend />}
-/>
 
       </Routes>
 

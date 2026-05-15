@@ -10,7 +10,9 @@ import Loader from "./Loader";
 const Home = () => {
 
   const [popularMovies, setPopularMovies] = useState([]);
+
   const [topRatedMovies, setTopRatedMovies] = useState([]);
+
   const [newMovies, setNewMovies] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -35,11 +37,14 @@ const Home = () => {
 
         ]);
 
-        const popularData = await popularResponse.json();
+        const popularData =
+          await popularResponse.json();
 
-        const topRatedData = await topRatedResponse.json();
+        const topRatedData =
+          await topRatedResponse.json();
 
-        const newReleaseData = await newReleaseResponse.json();
+        const newReleaseData =
+          await newReleaseResponse.json();
 
         setPopularMovies(popularData);
 
